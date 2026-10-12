@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta name="theme-color" content="#07070c">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>Sequence Reality</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header class="topbar">
+        <button id="projectBtn" class="project-btn" title="Projects">
+            <span class="brand">SEQUENCE <span>REALITY</span></span>
+            <span class="project-line">
+                <span id="saveDot" class="save-dot" title="Saved"></span>
+                <span id="projectName" class="project-name"></span>
+            </span>
+        </button>
+        <div class="bpm-ctl" role="group" aria-label="Tempo">
+            <button id="bpmDown" aria-label="Slower">−</button>
+            <label class="bpm-field">
+                <input id="bpmInput" type="number" inputmode="numeric" min="40" max="240" aria-label="BPM">
+                <span>BPM</span>
+            </label>
+            <button id="bpmUp" aria-label="Faster">+</button>
+        </div>
+        <button id="playBtn" class="play-btn" aria-label="Play">
+            <svg class="icon-play" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4.8v14.4a.8.8 0 0 0 1.2.7l11.5-7.2a.8.8 0 0 0 0-1.4L8.2 4.1a.8.8 0 0 0-1.2.7z" fill="currentColor"/></svg>
+            <svg class="icon-stop" viewBox="0 0 24 24" aria-hidden="true"><rect x="6" y="6" width="12" height="12" rx="2" fill="currentColor"/></svg>
+        </button>
+    </header>
+
+    <main>
+        <!-- RECORD -->
+        <section id="view-rec" class="view" aria-labelledby="tab-rec">
+            <div class="rec-panel">
+                <button id="recBtn" class="rec-btn" aria-label="Record">
+                    <span class="rec-dot"></span>
+                </button>
+                <div id="recTime" class="rec-time">READY</div>
+                <canvas id="recMeter" class="rec-meter" width="320" height="40"></canvas>
+                <p id="recHint" class="hint center">Tap to record a sound around you. Short hits — knocks, claps, keys, a cup on a table — make the best drums.</p>
+                <details class="input-settings">
+                    <summary>Input settings</summary>
+                    <label class="field">
+                        <span>Microphone</span>
+                        <select id="micSelect"><option value="">Default microphone</option></select>
+                    </label>
+                </details>
+            </div>
+
+            <div class="section-head">
+                <h2>Samples</h2>
+                <span id="sampleCount" class="muted"></span>
+            </div>
+            <div id="sampleList" class="sample-list"></div>
+            <div class="rec-extras">
+                <label class="link-btn">Import audio file<input id="importAudioInput" type="file" accept="audio/*" hidden></label>
+                <button id="demoKitBtn" class="link-btn">No mic handy? Load a demo kit</button>
+            </div>
+        </section>
+
+        <!-- SEQUENCER -->
+        <section id="view-seq" class="view" aria-labelledby="tab-seq">
+            <div id="presetBar" class="preset-bar" role="toolbar" aria-label="Presets"></div>
+            <p id="presetInfo" class="hint"></p>
+            <div class="seq-tools">
+                <div id="pageSwitch" class="page-switch" role="group" aria-label="Step page">
+                    <button data-page="0">1–8</button>
+                    <button data-page="1">9–16</button>
+                </div>
+                <label class="swing">
+                    <span>Swing</span>
+                    <input id="swingInput" type="range" min="0" max="0.6" step="0.05">
+                    <output id="swingValue"></output>
+                </label>
+            </div>
+            <div id="seqGrid" class="seq-grid page-0"></div>
+            <div class="seq-actions">
+                <button id="addTrackBtn">+ Track</button>
+                <button id="autoAssignBtn">Auto-place samples</button>
+                <button id="clearBtn" class="ghost">Clear steps</button>
+            </div>
+        </section>
+
+        <!-- MIX -->
+        <section id="view-mix" class="view" aria-labelledby="tab-mix">
+            <div class="card">
+                <label class="slider-row">
+                    <span>Master</span>
+                    <input id="masterVol" type="range" min="-40" max="6" step="1">
+                    <output id="masterVolValue"></output>
+                </label>
+            </div>
+            <div id="mixList" class="mix-list"></div>
+        </section>
+
+        <!-- PROJECTS -->
+        <section id="view-projects" class="view" aria-labelledby="tab-projects">
+            <div class="card">
+                <label class="field">
+                    <span>Project name</span>
+                    <input id="projectNameInput" type="text" maxlength="40" autocomplete="off">
+                </label>
+                <div class="btn-row">
+                    <button id="newProjectBtn" class="primary">New project</button>
+                    <button id="exportBtn">Export .zip</button>
+                    <label class="btn">Import .zip<input id="importInput" type="file" accept=".zip,application/zip" hidden></label>
+                </div>
+                <p id="storageNote" class="hint">Projects save automatically in this browser on this device. Export a .zip to back up a project or move it to another device.</p>
+            </div>
+            <div class="section-head">
+                <h2>Saved projects</h2>
+                <span id="storageUsage" class="muted"></span>
+            </div>
+            <div id="projectList" class="project-list"></div>
+        </section>
+    </main>
+
+    <nav class="tabbar" role="tablist">
+        <button id="tab-rec" data-view="rec" role="tab">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="7" fill="currentColor"/></svg>
+            <span>Record</span>
+        </button>
+        <button id="tab-seq" data-view="seq" role="tab">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4h4v4H4zM10 4h4v4h-4zM16 10h4v4h-4zM4 16h4v4H4zM10 10h4v4h-4zM16 16h4v4h-4z" fill="currentColor"/></svg>
+            <span>Sequence</span>
+        </button>
+        <button id="tab-mix" data-view="mix" role="tab">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3v18M12 3v18M18 3v18" stroke="currentColor" stroke-width="2"/><rect x="3.5" y="13" width="5" height="3" rx="1" fill="currentColor"/><rect x="9.5" y="6" width="5" height="3" rx="1" fill="currentColor"/><rect x="15.5" y="10" width="5" height="3" rx="1" fill="currentColor"/></svg>
+            <span>Mix</span>
+        </button>
+        <button id="tab-projects" data-view="projects" role="tab">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6.5A1.5 1.5 0 0 1 4.5 5h5l2 2h8A1.5 1.5 0 0 1 21 8.5v9a1.5 1.5 0 0 1-1.5 1.5h-15A1.5 1.5 0 0 1 3 17.5z" fill="currentColor"/></svg>
+            <span>Projects</span>
+        </button>
+    </nav>
+
+    <!-- CROP / EDIT SAMPLE -->
+    <div id="editor" class="overlay" hidden>
+        <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="edTitle">
+            <h3 id="edTitle">Crop sample</h3>
+            <input id="edName" class="name-input" type="text" maxlength="24" aria-label="Sample name" autocomplete="off">
+            <div id="waveWrap" class="wave-wrap">
+                <canvas id="edCanvas"></canvas>
+                <div id="shadeL" class="shade left"></div>
+                <div id="shadeR" class="shade right"></div>
+                <div id="hStart" class="handle start"><span></span></div>
+                <div id="hEnd" class="handle end"><span></span></div>
+                <div id="playhead" class="playhead"></div>
+            </div>
+            <div class="wave-info">
+                <span id="selInfo"></span>
+                <span class="muted">Drag the handles or tap the waveform</span>
+            </div>
+            <div class="editor-row">
+                <button id="edPlay" class="primary-outline">▶ Play</button>
+                <button id="edAuto">Auto-crop</button>
+                <button id="edAll">Full length</button>
+            </div>
+            <div class="editor-row">
+                <button id="edReverse" class="toggle" aria-pressed="false">Reverse</button>
+                <button id="edNormalize" class="toggle" aria-pressed="true">Normalize</button>
+                <div class="stepper" role="group" aria-label="Pitch">
+                    <button id="edPitchDown" aria-label="Pitch down">−</button>
+                    <span id="edPitch">0 st</span>
+                    <button id="edPitchUp" aria-label="Pitch up">+</button>
+                </div>
+            </div>
+            <label class="field">
+                <span>Sound type (used by presets to place samples)</span>
+                <select id="edRole">
+                    <option value="auto">Auto</option>
+                    <option value="kick">Kick — low, boomy</option>
+                    <option value="snare">Snare / clap — snappy</option>
+                    <option value="hat">Hi-hat — short, bright</option>
+                    <option value="perc">Percussion — anything else</option>
+                </select>
+            </label>
+            <div class="sheet-foot">
+                <button id="edDelete" class="danger">Delete</button>
+                <span class="spacer"></span>
+                <button id="edCancel" class="ghost">Cancel</button>
+                <button id="edSave" class="primary">Save</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- SAMPLE PICKER -->
+    <div id="picker" class="overlay" hidden>
+        <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="pickerTitle">
+            <div class="sheet-head">
+                <h3 id="pickerTitle">Choose sample</h3>
+                <button id="pickerClose" class="ghost" aria-label="Close">✕</button>
+            </div>
+            <div id="pickerList" class="picker-list"></div>
+        </div>
+    </div>
+
+    <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+    <noscript><p class="noscript">Sequence Reality needs JavaScript.</p></noscript>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.7.77/Tone.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>

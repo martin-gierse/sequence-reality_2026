@@ -1,0 +1,6 @@
+# Local tooling
+.claude/
+
+# Previous version, kept locally only
+backup-original/
+index (2).html
